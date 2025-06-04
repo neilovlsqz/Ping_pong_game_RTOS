@@ -35,7 +35,7 @@ void Taskpaddle2( void *pvParameters );
 void Taskball( void *pvParameters );
 void Taskrender( void *pvParameters );
 
-//Global variables (In RTOS use this type of variables carefully because it might cause issues and result in unexpected behavior.
+//Global variables (In RTOS use this type of variables carefully because it might cause issues and result in unexpected behavior).
 
 int matrix[15][31];
 /*
@@ -44,7 +44,7 @@ int matrix[15][31];
   [30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],
   [59,58,57,56,55,54,53,52,51,50,49,48,47,46,45],
   ...
-  [319,318,317,316,315,314,313,312,311,310,309,308,307,306,305].  // I wrote this to try to explain how the led matrix was made, in zig zag. 
+  [319,318,317,316,315,314,313,312,311,310,309,308,307,306,305].  // I wrote this to try to explain how the LED matrix is structured, in zig zag pattern. 
   ...465]
 */
 int counter = 0; // Aux counter
@@ -58,9 +58,9 @@ int ballDirY = 1; // Variable indicating the ball's direction on the Y axis
 int paddle1X;
 int paddle2X;
 
-int speedball = 70; //ball speed
+int speedball = 70; //With this value you can control the speed of the ball.
 
-// Initialize the led matrix mapping.
+// Initialize the LED matrix mapping.
 
 void initMatrixMapping() {
     for (int i = 0; i < 31; i++) {
@@ -82,19 +82,19 @@ void setup()
   
   Serial.begin(115200);
   //analogSetWidth(5);
-  initMatrixMapping();
+  initMatrixMapping(); //Call this that we defined above to map the LED matrix into a two-dimensional array.
 
   xAnalogSemaphore = xSemaphoreCreateMutex(); //Semaphore creation for analogReads
 
-  xTaskCreatePinnedToCore(Taskpaddle1, "PaddleONE", 2048 , NULL, 3, NULL, 0 ); //Core 0
+  xTaskCreatePinnedToCore(Taskpaddle1, "PaddleONE", 2048 , NULL, 3, NULL, 0 ); //Task creation with some parameters, set to work with Core 0
 
-  xTaskCreatePinnedToCore(Taskpaddle2, "PaddleTWO", 2048 , NULL, 3, NULL, 0 );
+  xTaskCreatePinnedToCore(Taskpaddle2, "PaddleTWO", 2048 , NULL, 3, NULL, 0 ); // set to work with Core 0 too.
 
-  xTaskCreatePinnedToCore(Taskball, "Ball", 2048, NULL, 2, NULL, 1); //Core 1
+  xTaskCreatePinnedToCore(Taskball, "Ball", 2048, NULL, 2, NULL, 1); // set to work with Core 1.
 
-  xTaskCreatePinnedToCore(Taskrender, "Render", 2048, NULL, 2, NULL, 1);
+  xTaskCreatePinnedToCore(Taskrender, "Render", 2048, NULL, 2, NULL, 1); // Set to work with Core 1 too.
   
-  //vTaskStartScheduler();
+  //vTaskStartScheduler(); <- Don't uncomment this because it might result in program crashes due to the watchdog.
 
 
  }
@@ -105,7 +105,8 @@ void loop()
  }
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////// Los task
+/////////////////////////////////// The tasks ///////////////////////////////////////////////////////////////
+
 void Taskpaddle1( void *pvParameters )
 {
 
@@ -113,77 +114,15 @@ void Taskpaddle1( void *pvParameters )
 
   for(;;)
   {
-    int SensorVal1 = analogRead(POT1_PIN);
+    //int SensorVal1 = analogRead(POT1_PIN); 
     //Serial.println(SensorVal1);
-    if (xSemaphoreTake(xAnalogSemaphore, portMAX_DELAY)) 
+    if (xSemaphoreTake(xAnalogSemaphore, portMAX_DELAY)) // Here we call the semaphore that we defined above to share ADC resources and execute related core inside.
     {
-    int SensorVal1 = analogRead(POT1_PIN);
+    int SensorVal1 = analogRead(POT1_PIN); // the method you already know for performing ADC readings.
     Serial.println(SensorVal1);
-    
-    // This range is removed to control only the center of each paddle; 
-    // the left and right edges are controlled by the definition of PADDLE_HEIGHT 
-    // to prevent the paddle from leaving the matrix.
-      /*if(SensorVal1 >=0 && SensorVal1 <=2)
-      {
-        paddle1X = 0;       
-      }*/
-      if(SensorVal1 >=0 && SensorVal1 <=315)
-      {
-        paddle1X = 13;
-      }
-      if(SensorVal1 >=316 && SensorVal1 <=630)
-      {
-        paddle1X = 12;
-      }
-      if(SensorVal1 >=631 && SensorVal1 <=945)
-      {
-        paddle1X = 11;
-      }
-      if(SensorVal1 >=946 && SensorVal1 <=1260)
-      {
-        paddle1X = 10;
-      }
-      if(SensorVal1 >=1261 && SensorVal1 <=1575)
-      {
-        paddle1X = 9;
-      }
-      if(SensorVal1 >=1576 && SensorVal1 <=1890)
-      {
-        paddle1X = 8;
-      }
-      if(SensorVal1 >=1891 && SensorVal1 <=2205)
-      {
-        paddle1X = 7;
-      }
-      if(SensorVal1 >=2206 && SensorVal1 <=2520)
-      {
-        paddle1X = 6;
-      }
-      if(SensorVal1 >=2521 && SensorVal1 <=2835)
-      {
-        paddle1X = 5;
-      }
-      if(SensorVal1 >=2836 && SensorVal1 <=3150)
-      {
-        paddle1X = 4;
-      }
-      if(SensorVal1 >=3151 && SensorVal1 <=3465)
-      {
-        paddle1X = 3;
-      }
-      if(SensorVal1 >=3466 && SensorVal1 <=3780)
-      {
-        paddle1X = 2;
-      }
-      if(SensorVal1 >=3781 && SensorVal1 <=4095)
-      {
-        paddle1X = 1;
-      }
-      /*if(SensorVal1 >=3550 && SensorVal1 <=3822)
-      {
-        paddle1X = 14;
-      }*/
-      xSemaphoreGive(xAnalogSemaphore);
+    paddle1X = map(SensorVal1, 0, 4095, 13, 1); //to map values from ADC readings.
+      
+    xSemaphoreGive(xAnalogSemaphore); // This thing is for release ADC, now is ready to be used with other tasks, if it's needed.
     }
     
     vTaskDelay(pdMS_TO_TICKS(10));
@@ -198,75 +137,12 @@ void Taskpaddle2( void *pvParameters )
   for(;;)
   {
 
-    if (xSemaphoreTake(xAnalogSemaphore, portMAX_DELAY)) 
+    if (xSemaphoreTake(xAnalogSemaphore, portMAX_DELAY)) //same thing than taskpaddle1
     {
     int SensorVal2 = analogRead(POT2_PIN);
     Serial.println(SensorVal2);
-    
-    // This range is removed to control only the center of each paddle; 
-    // the left and right edges are controlled by the definition of PADDLE_HEIGHT 
-    // to prevent the paddle from leaving the matrix.
-      /*if(SensorVal2 >=0 && SensorVal2 <=2)
-      {
-        paddle2X = 0;       
-      }*/
-      if(SensorVal2 >=0 && SensorVal2 <=315)
-      {
-        paddle2X = 1;
-      }
-      if(SensorVal2 >=316 && SensorVal2 <=630)
-      {
-        paddle2X = 2;
-      }
-      if(SensorVal2 >=631 && SensorVal2 <=945)
-      {
-        paddle2X = 3;
-      }
-      if(SensorVal2 >=946 && SensorVal2 <=1260)
-      {
-        paddle2X = 4;
-      }
-      if(SensorVal2 >=1261 && SensorVal2 <=1575)
-      {
-        paddle2X = 5;
-      }
-      if(SensorVal2 >=1576 && SensorVal2 <=1890)
-      {
-        paddle2X = 6;
-      }
-      if(SensorVal2 >=1891 && SensorVal2 <=2205)
-      {
-        paddle2X = 7;
-      }
-      if(SensorVal2 >=2206 && SensorVal2 <=2520)
-      {
-        paddle2X = 8;
-      }
-      if(SensorVal2 >=2521 && SensorVal2 <=2835)
-      {
-        paddle2X = 9;
-      }
-      if(SensorVal2 >=2836 && SensorVal2 <=3150)
-      {
-        paddle2X = 10;
-      }
-      if(SensorVal2 >=3151 && SensorVal2 <=3465)
-      {
-        paddle2X = 11;
-      }
-      if(SensorVal2 >=3466 && SensorVal2 <=3780)
-      {
-        paddle2X = 12;
-      }
-      if(SensorVal2 >=3781 && SensorVal2 <=4095)
-      {
-        paddle2X = 13;
-      }
-      /*if(SensorVal2 >=3550 && SensorVal2 <=3822)
-      {
-        paddle2X = 14;
-      }*/
-      xSemaphoreGive(xAnalogSemaphore);
+    paddle2X = map(SensorVal2, 0, 4095, 1, 13); //this thing maps values from ADC assigning backwards than Taskpaddle1 because the paddle 2 position.
+    xSemaphoreGive(xAnalogSemaphore);
     }
     vTaskDelay(pdMS_TO_TICKS(10));
   }
