@@ -35,6 +35,8 @@ void Taskpaddle2( void *pvParameters );
 void Taskball( void *pvParameters );
 void Taskrender( void *pvParameters );
 
+//Global variables (In RTOS use this type of variables carefully because it might cause issues and result in unexpected behavior.
+
 int matrix[15][31];
 /*
   [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],
