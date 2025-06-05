@@ -191,7 +191,7 @@ void Taskball( void *pvParameters )
     else if(ballY == PADDLE1Y+1 && ballX == paddle1X)
         {
             ballDirY *= -1;
-            speedball--;
+            speedball--; //each time the ball has a collision with a paddle, the speed increase.
         }
     else if(ballY == PADDLE1Y+1 && ballX == paddle1X-2)
         {
@@ -199,19 +199,19 @@ void Taskball( void *pvParameters )
           {
             ballDirY *= -1;
             ballDirX *= -1;
-            speedball--;
+            speedball--; //each time the ball has a collision with a paddle, the speed increase.
           }
           else{}
         }
     else if(ballY == PADDLE1Y+1 && ballX == paddle1X-1)
         {
             ballDirY *= -1;
-            speedball--;
+            speedball--; //each time the ball has a collision with a paddle, the speed increase.
         }
     else if(ballY == PADDLE1Y+1 && ballX == paddle1X+1)
         {
             ballDirY *= -1;
-            speedball--;
+            speedball--; //each time the ball has a collision with a paddle, the speed increase.
         }
     else if(ballY == PADDLE1Y+1 && ballX == paddle1X+2)
         {
@@ -219,7 +219,7 @@ void Taskball( void *pvParameters )
           {
             ballDirY *= -1;
             ballDirX *= -1;
-            speedball--;
+            speedball--; //each time the ball has a collision with a paddle, the speed increase.
           }
           else{}
         }        
@@ -227,7 +227,7 @@ void Taskball( void *pvParameters )
     else if(ballY == PADDLE2Y-1 && ballX == paddle2X)
         {
             ballDirY *= -1;
-            speedball--;
+            speedball--; //each time the ball has a collision with a paddle, the speed increase.
         }
     else if(ballY == PADDLE2Y-1 && ballX == paddle2X-2)
         {
@@ -235,7 +235,7 @@ void Taskball( void *pvParameters )
           {
             ballDirY *= -1;
             ballDirX *= -1;
-            speedball--;
+            speedball--; //each time the ball has a collision with a paddle, the speed increase.
           }
           else
           {
@@ -245,12 +245,12 @@ void Taskball( void *pvParameters )
     else if(ballY == PADDLE2Y-1 && ballX == paddle2X-1)
         {
             ballDirY *= -1;
-            speedball--;
+            speedball--; //each time the ball has a collision with a paddle, the speed increase.
         }
     else if(ballY == PADDLE2Y-1 && ballX == paddle2X+1)
         {
             ballDirY *= -1;
-            speedball--;
+            speedball--; //each time the ball has a collision with a paddle, the speed increase.
         }
     else if(ballY == PADDLE2Y-1 && ballX == paddle2X+2)
         {
@@ -258,7 +258,7 @@ void Taskball( void *pvParameters )
           {
             ballDirY *= -1;
             ballDirX *= -1;
-            speedball--;
+            speedball--; //each time the ball has a collision with a paddle, the speed increase.
           }
           else
           {
